@@ -1,7 +1,8 @@
 import express from "express";
-import { createPool, getConnection, Pool } from "oracledb";
+import odb from "oracledb";
+import type { Pool } from "oracledb";
 import cors from "cors";
-import fs from "fs/promises";
+import { promises as fs } from "fs";
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,7 @@ let pool: Pool;
 
 async function initDb() {
   try {
-    pool = await createPool({
+    pool = await odb.createPool({
       user: "system",
       password: "lolxd5",
       connectionString: "localhost/deep",
@@ -27,7 +28,7 @@ async function initDb() {
 
     for (let i = 0; i < commands.length - 1; i++) {
       try {
-        conn.execute(commands[i]);
+        await conn.execute(`${commands[i]}`);
       } catch (e) {
         console.log("Table already created");
       }
@@ -35,7 +36,7 @@ async function initDb() {
 
     await conn.close();
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
   }
 }
 
@@ -48,7 +49,7 @@ app.get("/", (req, res) => {
   res.send("Test endpoint");
 });
 
-initDb();
+await initDb();
 app.listen(port, () => {
   console.log(`App listening on http://localhost:${port}`);
 });

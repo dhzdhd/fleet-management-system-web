@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    // "lib": ["ES2021.String"],
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    // "allowJs": true,
+    // "checkJs": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true
+  },
+}
