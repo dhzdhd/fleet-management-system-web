@@ -3,11 +3,13 @@ import odb from "oracledb";
 import type { Pool } from "oracledb";
 import cors from "cors";
 import { promises as fs } from "fs";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = 3000;
 
 app.use(cors());
+app.use(bodyParser.json());
 
 let pool: Pool;
 

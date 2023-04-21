@@ -6,8 +6,8 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    // "allowJs": true,
-    // "checkJs": true,
+    "allowJs": true,
+    "checkJs": true,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true
   },
