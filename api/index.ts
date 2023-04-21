@@ -1,6 +1,7 @@
 import express from "express";
 import { createPool, getConnection, Pool } from "oracledb";
 import cors from "cors";
+import fs from "fs/promises";
 
 const app = express();
 const port = 3000;
@@ -14,10 +15,25 @@ async function initDb() {
     pool = await createPool({
       user: "system",
       password: "lolxd5",
-      connectionString: "ORACLE-SERVER/mcaorcl",
+      connectionString: "localhost/deep",
     });
 
     let conn = await pool.getConnection();
+
+    const data = await fs.readFile("sql/create_table.sql", {
+      encoding: "utf8",
+    });
+    const commands = data.split(";");
+
+    for (let i = 0; i < commands.length - 1; i++) {
+      try {
+        conn.execute(commands[i]);
+      } catch (e) {
+        console.log("Table already created");
+      }
+    }
+
+    await conn.close();
   } catch (err) {
     console.error(err.message);
   }
