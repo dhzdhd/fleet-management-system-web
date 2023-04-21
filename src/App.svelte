@@ -1,6 +1,6 @@
 <script lang="ts">
   async function fet() {
-    const res = await fetch('http://localhost:3000/api');
+    const res = await fetch('http://localhost:3000/api/tables');
     return await res.text();
   }
 </script>
