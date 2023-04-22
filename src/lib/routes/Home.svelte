@@ -1,18 +1,32 @@
 <script lang="ts">
-  const tables = [
-    "driver",
-    "vehicle",
-    "trip",
-    "cost",
-    "vehicle_involved",
-    "driver_involved",
-    "driver_phone",
-  ];
+  import { useNavigate } from "svelte-navigator";
+
+  interface TableData {
+    name: string;
+    pkey: string[];
+    recordCount: number;
+  }
 
   interface Response {
     headers: { name: string }[];
     values: string[][];
   }
+
+  interface InsertPayload {
+    data: string[];
+  }
+
+  const URL = "http://localhost:3000/api/tables/";
+
+  const tables: TableData[] = [
+    { name: "driver", pkey: [], recordCount: 0 },
+    { name: "vehicle", pkey: [], recordCount: 0 },
+    { name: "trip", pkey: [], recordCount: 0 },
+    { name: "cost", pkey: [], recordCount: 0 },
+    { name: "vehicle_involved", pkey: [], recordCount: 0 },
+    { name: "driver_involved", pkey: [], recordCount: 0 },
+    { name: "driver_phone", pkey: [], recordCount: 0 },
+  ];
 
   const parse = (data: any): Response => {
     return {
@@ -22,17 +36,60 @@
   };
 
   const fetchData = async (table: string) => {
-    const response = await fetch(`http://localhost:3000/api/tables/${table}`);
+    const response = await fetch(`${URL}${table}`);
     const data = await response.json();
 
     const parsedData = parse(data);
+    optionResponse = parsedData;
     return parsedData;
   };
 
-  let option: string = "driver";
+  const insertData = async () => {
+    if (insertArr.length !== optionResponse.headers.length) {
+      return;
+    }
+
+    // const payload: InsertPayload = {
+    //   data: insertArr,
+    // };
+    // console.log(JSON.stringify(payload));
+
+    console.log(`${URL}${option.name}`);
+
+    const response = await fetch(`${URL}${option.name}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: insertArr }),
+    });
+    insertArr = [];
+    const data = await response.json();
+
+    console.log(data);
+    useNavigate()("#");
+  };
+
+  // const updateData = async (table: string) => {
+  //   const payload: InsertPayload = {
+  //     data: [], // ! get column data
+  //   };
+
+  //   const response = await fetch(`${URL}${table}`, {
+  //     method: "PATCH",
+  //     body: JSON.stringify(payload),
+  //   });
+  //   const data = await response.json();
+
+  //   console.log(data);
+  // };
+
+  let option: TableData = tables[0];
+  let optionResponse: Response = { headers: [], values: [] };
+  let insertArr: string[] = [];
+
+  $: console.log(insertArr);
 
   let promise = fetchData("driver");
-  $: promise = fetchData(option);
+  $: promise = fetchData(option.name);
 </script>
 
 <div class="h-screen w-screen flex flex-col">
@@ -43,13 +100,13 @@
         class="select select-bordered w-full max-w-xs"
       >
         {#each tables as item}
-          <option value={item}>{item}</option>
+          <option value={item}>{item.name}</option>
         {/each}
       </select>
     </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <button class="btn">New record</button>
+        <a href="#insert-modal" class="btn">New record</a>
       </ul>
     </div>
   </div>
@@ -60,6 +117,7 @@
       <table class="table w-full outline-2 outline-accent outline">
         <thead>
           <tr>
+            <th />
             {#each data.headers as item}
               <th>{item.name}</th>
             {/each}
@@ -68,6 +126,9 @@
         <tbody>
           {#each data.values as item}
             <tr class="hover">
+              <td>
+                <div class="btn">update</div>
+              </td>
               {#each item as item}
                 <td>{item}</td>
               {/each}
@@ -78,5 +139,27 @@
     {:catch error}
       <div>Error</div>
     {/await}
+  </div>
+</div>
+
+<div class="modal" id="insert-modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Insert into {option.name.toUpperCase()}</h3>
+    <ul class="flex flex-col gap-2 my-5">
+      {#each optionResponse.headers as item, i}
+        <input
+          bind:value={insertArr[i]}
+          class="input input-bordered w-full"
+          type="text"
+          placeholder={item.name}
+        />
+      {/each}
+    </ul>
+    <div class="modal-action">
+      <button on:click={async () => await insertData()} class="btn"
+        >Submit</button
+      >
+      <a href="#" class="btn">Close</a>
+    </div>
   </div>
 </div>

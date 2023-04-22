@@ -8,8 +8,8 @@ import bodyParser from "body-parser";
 const app = express();
 const port = 3000;
 
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
 
 let pool: Pool;
 
@@ -42,14 +42,34 @@ async function initDb() {
   }
 }
 
-app.route("/api/tables/:id").get(async (req, res) => {
-  let conn = await pool.getConnection();
+app
+  .route("/api/tables/:id")
+  .get(async (req, res) => {
+    let conn = await pool.getConnection();
 
-  let data = await conn.execute(`SELECT * FROM ${req.params.id}`);
-  res.send(data);
+    let data = await conn.execute(`SELECT * FROM ${req.params.id}`);
+    res.send(data);
 
-  await conn.close();
-});
+    await conn.close();
+  })
+  .post(async (req, res) => {
+    let conn = await pool.getConnection();
+    let values: string[] = req.body.data;
+
+    console.log(`INSERT INTO ${req.params.id} VALUES(${values.join(",")})`);
+
+    let data = await conn.execute(
+      `INSERT INTO ${req.params.id} VALUES(${values
+        .map((_, i) => `:${i}`)
+        .join(",")})`,
+      values
+    );
+    res.send(data);
+
+    await conn.commit();
+    await conn.close();
+  })
+  .patch(async (req, res) => {});
 
 app.get("/", (req, res) => {
   res.send("Test endpoint");
