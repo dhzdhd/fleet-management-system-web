@@ -42,10 +42,10 @@ async function initDb() {
   }
 }
 
-app.route("/api/tables").get(async (req, res) => {
+app.route("/api/tables/:id").get(async (req, res) => {
   let conn = await pool.getConnection();
 
-  let data = await conn.execute(`SELECT * FROM vehicle`);
+  let data = await conn.execute(`SELECT * FROM ${req.params.id}`);
   res.send(data);
 
   await conn.close();

@@ -1,44 +1,82 @@
 <script lang="ts">
-  const initData = async () => {};
+  const tables = [
+    "driver",
+    "vehicle",
+    "trip",
+    "cost",
+    "vehicle_involved",
+    "driver_involved",
+    "driver_phone",
+  ];
+
+  interface Response {
+    headers: { name: string }[];
+    values: string[][];
+  }
+
+  const parse = (data: any): Response => {
+    return {
+      headers: data.metaData,
+      values: data.rows,
+    } satisfies Response;
+  };
+
+  const fetchData = async (table: string) => {
+    const response = await fetch(`http://localhost:3000/api/tables/${table}`);
+    const data = await response.json();
+
+    const parsedData = parse(data);
+    return parsedData;
+  };
+
+  let option: string = "driver";
+
+  let promise = fetchData("driver");
+  $: promise = fetchData(option);
 </script>
 
-{#await initData}
-  <div>Loading</div>
-{:then value}
-  <div>
-    <div class="h-screen w-screen overflow-x-auto p-2">
+<div class="h-screen w-screen flex flex-col">
+  <div class="navbar bg-base-100">
+    <div class="flex-1">
+      <select
+        bind:value={option}
+        class="select select-bordered w-full max-w-xs"
+      >
+        {#each tables as item}
+          <option value={item}>{item}</option>
+        {/each}
+      </select>
+    </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <button class="btn">New record</button>
+      </ul>
+    </div>
+  </div>
+  <div class="overflow-x-auto">
+    {#await promise}
+      <div>Loading</div>
+    {:then data}
       <table class="table w-full outline-2 outline-accent outline">
         <thead>
           <tr>
-            <th />
-            <th>Name</th>
-            <th>Job</th>
-            <th>Favorite Color</th>
+            {#each data.headers as item}
+              <th>{item.name}</th>
+            {/each}
           </tr>
         </thead>
         <tbody>
-          <tr class="hover">
-            <th>1</th>
-            <td>Cy Ganderton</td>
-            <td>Quality Control Specialist</td>
-            <td>Blue</td>
-          </tr>
-          <tr class="hover">
-            <th>2</th>
-            <td>Hart Hagerty</td>
-            <td>Desktop Support Technician</td>
-            <td>Purple</td>
-          </tr>
-          <tr class="hover">
-            <th>3</th>
-            <td>Brice Swyre</td>
-            <td>Tax Accountant</td>
-            <td>Red</td>
-          </tr>
+          {#each data.values as item}
+            <tr class="hover">
+              {#each item as item}
+                <td>{item}</td>
+              {/each}
+            </tr>
+          {/each}
         </tbody>
       </table>
-    </div>
+    {:catch error}
+      <div>Error</div>
+    {/await}
   </div>
-{:catch error}
-  <div>Error</div>
-{/await}
+</div>
