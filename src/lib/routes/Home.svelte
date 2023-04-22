@@ -17,7 +17,7 @@
   }
 
   const URL = "http://localhost:3000/api/tables/";
-
+  const nav = useNavigate();
   const tables: TableData[] = [
     { name: "driver", pkey: [], recordCount: 0 },
     { name: "vehicle", pkey: [], recordCount: 0 },
@@ -46,26 +46,25 @@
 
   const insertData = async () => {
     if (insertArr.length !== optionResponse.headers.length) {
+      nav(-1);
       return;
     }
 
-    // const payload: InsertPayload = {
-    //   data: insertArr,
-    // };
-    // console.log(JSON.stringify(payload));
-
-    console.log(`${URL}${option.name}`);
+    const payload: InsertPayload = {
+      data: insertArr,
+    };
 
     const response = await fetch(`${URL}${option.name}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: insertArr }),
+      body: JSON.stringify(payload),
     });
     insertArr = [];
-    const data = await response.json();
 
+    const data = await response.text();
     console.log(data);
-    useNavigate()("#");
+
+    nav(-1);
   };
 
   // const updateData = async (table: string) => {
@@ -85,8 +84,6 @@
   let option: TableData = tables[0];
   let optionResponse: Response = { headers: [], values: [] };
   let insertArr: string[] = [];
-
-  $: console.log(insertArr);
 
   let promise = fetchData("driver");
   $: promise = fetchData(option.name);

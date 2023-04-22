@@ -56,18 +56,21 @@ app
     let conn = await pool.getConnection();
     let values: string[] = req.body.data;
 
-    console.log(`INSERT INTO ${req.params.id} VALUES(${values.join(",")})`);
+    try {
+      let data = await conn.execute(
+        `INSERT INTO ${req.params.id} VALUES(${values
+          .map((_, i) => `:${i}`)
+          .join(",")})`,
+        values
+      );
+      res.send(data);
 
-    let data = await conn.execute(
-      `INSERT INTO ${req.params.id} VALUES(${values
-        .map((_, i) => `:${i}`)
-        .join(",")})`,
-      values
-    );
-    res.send(data);
-
-    await conn.commit();
-    await conn.close();
+      await conn.commit();
+    } catch (e) {
+      res.send("Invalid data entered");
+    } finally {
+      await conn.close();
+    }
   })
   .patch(async (req, res) => {});
 
