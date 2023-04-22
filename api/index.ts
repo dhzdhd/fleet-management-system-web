@@ -72,7 +72,26 @@ app
       await conn.close();
     }
   })
-  .patch(async (req, res) => {});
+  .patch(async (req, res) => {
+    let conn = await pool.getConnection();
+    let values: string[] = req.body.data;
+
+    try {
+      let data = await conn.execute(
+        `UPDATE ${req.params.id} VALUES(${values
+          .map((_, i) => `:${i}`)
+          .join(",")})`,
+        values
+      );
+      res.send(data);
+
+      await conn.commit();
+    } catch (e) {
+      res.send("Invalid data entered");
+    } finally {
+      await conn.close();
+    }
+  });
 
 app.get("/", (req, res) => {
   res.send("Test endpoint");

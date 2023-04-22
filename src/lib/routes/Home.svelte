@@ -16,6 +16,11 @@
     data: string[];
   }
 
+  interface UpdatePayload extends InsertPayload {
+    pkey: string[];
+    pkeyData: string[];
+  }
+
   const URL = "http://localhost:3000/api/tables/";
   const nav = useNavigate();
   const tables: TableData[] = [
@@ -45,13 +50,13 @@
   };
 
   const insertData = async () => {
-    if (insertArr.length !== optionResponse.headers.length) {
+    if (dialogArr.length !== optionResponse.headers.length) {
       nav(-1);
       return;
     }
 
     const payload: InsertPayload = {
-      data: insertArr,
+      data: dialogArr,
     };
 
     const response = await fetch(`${URL}${option.name}`, {
@@ -59,7 +64,7 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    insertArr = [];
+    dialogArr = [];
 
     const data = await response.text();
     console.log(data);
@@ -67,23 +72,43 @@
     nav(-1);
   };
 
-  // const updateData = async (table: string) => {
-  //   const payload: InsertPayload = {
-  //     data: [], // ! get column data
-  //   };
+  const showUpdateDataModal = async (index: number) => {
+    dialogArr = optionResponse.values[index];
+  };
 
-  //   const response = await fetch(`${URL}${table}`, {
-  //     method: "PATCH",
-  //     body: JSON.stringify(payload),
-  //   });
-  //   const data = await response.json();
+  const updateData = async (index: number) => {
+    if (dialogArr.length !== optionResponse.headers.length) {
+      nav(-1);
+      return;
+    }
 
-  //   console.log(data);
-  // };
+    const payload: UpdatePayload = {
+      data: dialogArr,
+      pkey: option.pkey,
+      pkeyData: option.pkey.map(
+        (attr) =>
+          optionResponse.values[index][
+            optionResponse.headers.indexOf({ name: attr })
+          ]
+      ),
+    };
+
+    const response = await fetch(`${URL}${option.name}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    dialogArr = [];
+
+    const data = await response.text();
+    console.log(data);
+
+    nav(-1);
+  };
 
   let option: TableData = tables[0];
   let optionResponse: Response = { headers: [], values: [] };
-  let insertArr: string[] = [];
+  let dialogArr: string[] = [];
 
   let promise = fetchData("driver");
   $: promise = fetchData(option.name);
@@ -103,7 +128,7 @@
     </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <a href="#insert-modal" class="btn">New record</a>
+        <a href="#upsert-modal" class="btn">New record</a>
       </ul>
     </div>
   </div>
@@ -121,10 +146,14 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.values as item}
+          {#each data.values as item, i}
             <tr class="hover">
               <td>
-                <div class="btn">update</div>
+                <a
+                  on:click={() => showUpdateDataModal(i)}
+                  href="#upsert-modal"
+                  class="btn">Update</a
+                >
               </td>
               {#each item as item}
                 <td>{item}</td>
@@ -139,13 +168,13 @@
   </div>
 </div>
 
-<div class="modal" id="insert-modal">
+<div class="modal" id="upsert-modal">
   <div class="modal-box">
     <h3 class="font-bold text-lg">Insert into {option.name.toUpperCase()}</h3>
     <ul class="flex flex-col gap-2 my-5">
       {#each optionResponse.headers as item, i}
         <input
-          bind:value={insertArr[i]}
+          bind:value={dialogArr[i]}
           class="input input-bordered w-full"
           type="text"
           placeholder={item.name}
