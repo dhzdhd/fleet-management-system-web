@@ -63,7 +63,7 @@ app
           .join(",")})`,
         values
       );
-      res.send(data);
+      res.send("Success");
 
       await conn.commit();
     } catch (e) {
@@ -92,7 +92,7 @@ app
         `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`,
         payload.data
       );
-      res.send(data);
+      res.send("Success");
 
       await conn.commit();
     } catch (e) {
