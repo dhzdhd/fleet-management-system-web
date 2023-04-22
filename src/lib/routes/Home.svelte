@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useNavigate } from "svelte-navigator";
+  import { insert } from "svelte/internal";
 
   interface TableData {
     name: string;
@@ -49,6 +50,10 @@
     return parsedData;
   };
 
+  const showInsertDataModal = async () => {
+    dialogType = "insert";
+  };
+
   const insertData = async () => {
     if (dialogArr.length !== optionResponse.headers.length) {
       nav(-1);
@@ -74,9 +79,11 @@
 
   const showUpdateDataModal = async (index: number) => {
     dialogArr = optionResponse.values[index];
+    dialogType = "update";
+    currentUpdateIndex = index;
   };
 
-  const updateData = async (index: number) => {
+  const updateData = async () => {
     if (dialogArr.length !== optionResponse.headers.length) {
       nav(-1);
       return;
@@ -87,14 +94,14 @@
       pkey: option.pkey,
       pkeyData: option.pkey.map(
         (attr) =>
-          optionResponse.values[index][
+          optionResponse.values[currentUpdateIndex][
             optionResponse.headers.indexOf({ name: attr })
           ]
       ),
     };
 
     const response = await fetch(`${URL}${option.name}`, {
-      method: "POST",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
@@ -109,6 +116,8 @@
   let option: TableData = tables[0];
   let optionResponse: Response = { headers: [], values: [] };
   let dialogArr: string[] = [];
+  let dialogType: "update" | "insert";
+  let currentUpdateIndex: number;
 
   let promise = fetchData("driver");
   $: promise = fetchData(option.name);
@@ -182,8 +191,10 @@
       {/each}
     </ul>
     <div class="modal-action">
-      <button on:click={async () => await insertData()} class="btn"
-        >Submit</button
+      <button
+        on:click={async () =>
+          (await (dialogType === "insert")) ? insertData() : updateData()}
+        class="btn">Submit</button
       >
       <a href="#" class="btn">Close</a>
     </div>
