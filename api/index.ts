@@ -74,14 +74,23 @@ app
   })
   .patch(async (req, res) => {
     let conn = await pool.getConnection();
-    let values: string[] = req.body.data;
+    let payload: any = req.body;
+
+    let params = payload.headers.map((e: string, i: number) => {
+      return `${e} = :${i}`;
+    });
+
+    let condition;
+    if (payload.pkey.length === 2) {
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = ${payload.pkeyData[1]}`;
+    } else {
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
+    }
 
     try {
       let data = await conn.execute(
-        `UPDATE ${req.params.id} VALUES(${values
-          .map((_, i) => `:${i}`)
-          .join(",")})`,
-        values
+        `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`,
+        payload.data
       );
       res.send(data);
 

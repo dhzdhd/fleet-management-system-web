@@ -1,11 +1,9 @@
 <script lang="ts">
   import { useNavigate } from "svelte-navigator";
-  import { insert } from "svelte/internal";
 
   interface TableData {
     name: string;
     pkey: string[];
-    recordCount: number;
   }
 
   interface Response {
@@ -20,18 +18,19 @@
   interface UpdatePayload extends InsertPayload {
     pkey: string[];
     pkeyData: string[];
+    headers: string[];
   }
 
   const URL = "http://localhost:3000/api/tables/";
   const nav = useNavigate();
   const tables: TableData[] = [
-    { name: "driver", pkey: [], recordCount: 0 },
-    { name: "vehicle", pkey: [], recordCount: 0 },
-    { name: "trip", pkey: [], recordCount: 0 },
-    { name: "cost", pkey: [], recordCount: 0 },
-    { name: "vehicle_involved", pkey: [], recordCount: 0 },
-    { name: "driver_involved", pkey: [], recordCount: 0 },
-    { name: "driver_phone", pkey: [], recordCount: 0 },
+    { name: "driver", pkey: ["DRIVERID"] },
+    { name: "vehicle", pkey: ["VEHICLEID"] },
+    { name: "trip", pkey: ["TRIPID"] },
+    { name: "cost", pkey: ["COSTID"] },
+    { name: "vehicle_involved", pkey: ["TRIPID", "VEHICLEID"] },
+    { name: "driver_involved", pkey: ["TRIPID", "DRIVERID"] },
+    { name: "driver_phone", pkey: ["PHONE", "DRIVERID"] },
   ];
 
   const parse = (data: any): Response => {
@@ -92,13 +91,13 @@
     const payload: UpdatePayload = {
       data: dialogArr,
       pkey: option.pkey,
-      pkeyData: option.pkey.map(
-        (attr) =>
-          optionResponse.values[currentUpdateIndex][
-            optionResponse.headers.indexOf({ name: attr })
-          ]
+      pkeyData: optionResponse.values[currentUpdateIndex].filter(
+        (_, i) => i === option.pkey.length - 1 || i === option.pkey.length - 2
       ),
+      headers: optionResponse.headers.map((e) => e.name),
     };
+
+    console.log(JSON.stringify(payload));
 
     const response = await fetch(`${URL}${option.name}`, {
       method: "PATCH",
@@ -119,6 +118,8 @@
   let dialogType: "update" | "insert";
   let currentUpdateIndex: number;
 
+  $: console.log(optionResponse);
+
   let promise = fetchData("driver");
   $: promise = fetchData(option.name);
 </script>
@@ -137,7 +138,11 @@
     </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <a href="#upsert-modal" class="btn">New record</a>
+        <a
+          on:click={() => showInsertDataModal()}
+          href="#upsert-modal"
+          class="btn">New record</a
+        >
       </ul>
     </div>
   </div>
@@ -193,7 +198,7 @@
     <div class="modal-action">
       <button
         on:click={async () =>
-          (await (dialogType === "insert")) ? insertData() : updateData()}
+          dialogType === "insert" ? await insertData() : await updateData()}
         class="btn">Submit</button
       >
       <a href="#" class="btn">Close</a>
