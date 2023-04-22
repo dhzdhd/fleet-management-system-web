@@ -137,7 +137,8 @@
       </select>
     </div>
     <div class="flex-none">
-      <ul class="menu menu-horizontal px-1">
+      <ul class="menu menu-horizontal px-1 gap-3">
+        <a href="#cost-modal" class="btn">Calculate cost</a>
         <a
           on:click={() => showInsertDataModal()}
           href="#upsert-modal"
@@ -201,6 +202,17 @@
           dialogType === "insert" ? await insertData() : await updateData()}
         class="btn">Submit</button
       >
+      <a href="#" class="btn">Close</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="cost-modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Calculate cost</h3>
+    <span>Hello</span>
+    <div class="modal-action">
+      <button class="btn">Calculate</button>
       <a href="#" class="btn">Close</a>
     </div>
   </div>
