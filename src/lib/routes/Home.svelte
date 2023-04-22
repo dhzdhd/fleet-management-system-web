@@ -118,8 +118,6 @@
   let dialogType: "update" | "insert";
   let currentUpdateIndex: number;
 
-  $: console.log(optionResponse);
-
   let promise = fetchData("driver");
   $: promise = fetchData(option.name);
 </script>
@@ -147,11 +145,13 @@
       </ul>
     </div>
   </div>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto h-full">
     {#await promise}
-      <div>Loading</div>
+      <div class="flex items-center justify-center h-full">
+        <h1 class="text-5xl">Loading</h1>
+      </div>
     {:then data}
-      <table class="table w-full outline-2 outline-accent outline">
+      <table class="table w-full">
         <thead>
           <tr>
             <th />
@@ -178,7 +178,9 @@
         </tbody>
       </table>
     {:catch error}
-      <div>Error</div>
+      <div class="flex items-center justify-center h-full">
+        <h1 class="text-5xl">{error}</h1>
+      </div>
     {/await}
   </div>
 </div>
