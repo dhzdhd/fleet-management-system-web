@@ -14,7 +14,7 @@ app.use(cors());
 let pool: Pool;
 
 interface CostPayload {
-  perVehicle: number[];
+  vehicleData: string[][];
   total: number;
 }
 
@@ -112,13 +112,22 @@ app.get("/api/cost", async (req, res) => {
 
   try {
     let data = await conn.execute(
-      "SELECT vehicle_id,SUM(totalcost) FROM cost NATURAL JOIN trip NATURAL JOIN vehicle_involved GROUP BY vehicle_id"
+      "SELECT vehicleid, SUM(totalcost) FROM cost NATURAL JOIN trip NATURAL JOIN vehicle_involved GROUP BY vehicleid"
     );
     console.log(JSON.stringify(data));
+    const rows: any = data.rows;
 
-    const payload: CostPayload = { perVehicle: [], total: 0 };
+    const total: number = rows
+      .map((e: string[]) => Number(e[1]))
+      .reduce((prev: number, cur: number) => prev + cur);
+
+    const payload: CostPayload = { vehicleData: rows, total: total };
+    console.log(payload);
+
     res.send(JSON.stringify(payload));
   } catch (e) {
+    console.log(e);
+
     res.send({ message: "Cannot calculate cost" });
   } finally {
     await conn.close();
