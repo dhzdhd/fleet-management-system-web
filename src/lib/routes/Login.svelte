@@ -1,30 +1,31 @@
 <script lang="ts">
   import { useFocus, useNavigate } from "svelte-navigator";
 
+  const nav = useNavigate();
+
   let username: string;
   let password: string;
 
   const submit = () => {
     if (password === "a" && username === "a") {
-      const nav = useNavigate();
       nav("home");
     }
   };
 </script>
 
 <form
-  class="h-screen flex flex-col items-center justify-center gap-5"
+  class="flex flex-col items-center justify-center h-screen gap-5"
   action=""
 >
   <input
     bind:value={username}
-    class="input input-bordered w-full max-w-xs"
+    class="w-full max-w-xs input input-bordered"
     type="text"
     placeholder="Username"
   />
   <input
     bind:value={password}
-    class="input input-bordered w-full max-w-xs"
+    class="w-full max-w-xs input input-bordered"
     type="text"
     placeholder="Password"
   />

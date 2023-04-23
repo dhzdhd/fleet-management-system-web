@@ -13,6 +13,11 @@ app.use(cors());
 
 let pool: Pool;
 
+interface CostPayload {
+  perVehicle: number[];
+  total: number;
+}
+
 async function initDb() {
   try {
     pool = await odb.createPool({
@@ -101,6 +106,24 @@ app
       await conn.close();
     }
   });
+
+app.get("/api/cost", async (req, res) => {
+  let conn = await pool.getConnection();
+
+  try {
+    let data = await conn.execute(
+      "SELECT vehicle_id,SUM(totalcost) FROM cost NATURAL JOIN trip NATURAL JOIN vehicle_involved GROUP BY vehicle_id"
+    );
+    console.log(JSON.stringify(data));
+
+    const payload: CostPayload = { perVehicle: [], total: 0 };
+    res.send(JSON.stringify(payload));
+  } catch (e) {
+    res.send({ message: "Cannot calculate cost" });
+  } finally {
+    await conn.close();
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("Test endpoint");
