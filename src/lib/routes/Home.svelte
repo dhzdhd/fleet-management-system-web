@@ -121,14 +121,17 @@
 
   const fetchCost = async () => {
     const response = await fetch(`${URL}cost`);
-    const data = await response.json();
 
-    costData = {
-      vehicleData: data.vehicleData,
-      total: data.total,
-    };
+    if (response.status == 200) {
+      const data = await response.json();
 
-    console.log(data);
+      costData = {
+        vehicleData: data.vehicleData,
+        total: data.total,
+      };
+
+      console.log(data);
+    }
   };
 
   let option: TableData = tables[0];
