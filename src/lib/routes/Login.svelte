@@ -32,6 +32,7 @@
   class="flex flex-col items-center justify-center h-screen gap-5"
   action=""
 >
+  <h1 class="text-4xl pb-8">Fleet Management System</h1>
   <input
     bind:value={username}
     class="w-full max-w-xs input input-bordered"
