@@ -213,6 +213,7 @@
         <thead>
           <tr>
             <th />
+            <th />
             {#each data.headers as item}
               <th>{item.name}</th>
             {/each}
@@ -226,6 +227,13 @@
                   on:click={() => showUpdateDataModal(i)}
                   href="#upsert-modal"
                   class="btn">Update</a
+                >
+              </td>
+              <td>
+                <a
+                  on:click={() => showUpdateDataModal(i)}
+                  href="#upsert-modal"
+                  class="btn">Delete</a
                 >
               </td>
               {#each item as item}
