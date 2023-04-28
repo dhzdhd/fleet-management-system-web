@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useNavigate } from "svelte-navigator";
+  import { fade, fly } from "svelte/transition";
 
   interface TableData {
     name: string;
@@ -24,6 +25,12 @@
   interface CostPayload {
     vehicleData: string[][];
     total: number;
+  }
+
+  interface Alert {
+    message: string;
+    visible: boolean;
+    type: "alert-success" | "alert-error";
   }
 
   const URL = "http://localhost:3000/api/";
@@ -60,6 +67,11 @@
 
   const insertData = async () => {
     if (dialogArr.length !== optionResponse.headers.length) {
+      alert = {
+        message: "All fields must be filled",
+        visible: true,
+        type: "alert-error",
+      };
       nav(-1);
       return;
     }
@@ -76,8 +88,23 @@
     dialogArr = [];
 
     const data = await response.text();
-    promise = fetchData(option.name);
     console.log(data);
+
+    if (response.status === 200) {
+      promise = fetchData(option.name);
+
+      alert = {
+        message: "Successfully inserted data",
+        visible: true,
+        type: "alert-success",
+      };
+    } else {
+      alert = {
+        message: "Failed to insert data",
+        visible: true,
+        type: "alert-error",
+      };
+    }
 
     nav(-1);
   };
@@ -113,8 +140,23 @@
     dialogArr = [];
 
     const data = await response.text();
-    promise = fetchData(option.name);
-    console.log(data);
+
+    if (response.status === 200) {
+      promise = fetchData(option.name);
+      console.log(data);
+
+      alert = {
+        message: "Successfully updated data",
+        visible: true,
+        type: "alert-success",
+      };
+    } else {
+      alert = {
+        message: "Failed to update data",
+        visible: true,
+        type: "alert-error",
+      };
+    }
 
     nav(-1);
   };
@@ -122,7 +164,7 @@
   const fetchCost = async () => {
     const response = await fetch(`${URL}cost`);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       const data = await response.json();
 
       costData = {
@@ -131,6 +173,12 @@
       };
 
       console.log(data);
+    } else {
+      alert = {
+        message: "Failed to fetch cost",
+        visible: true,
+        type: "alert-error",
+      };
     }
   };
 
@@ -139,6 +187,13 @@
   let dialogArr: string[] = [];
   let dialogType: "update" | "insert";
   let currentUpdateIndex: number;
+
+  let alert: Alert = { message: "", visible: false, type: "alert-success" };
+  $: {
+    setTimeout(() => {
+      alert = { ...alert, visible: false };
+    }, 5000);
+  }
 
   let costData: CostPayload = { vehicleData: [], total: 0 };
 
@@ -260,3 +315,31 @@
     </div>
   </div>
 </div>
+
+{#key alert.visible}
+  <div
+    in:fly={{ y: 200 }}
+    out:fade
+    class={`${
+      alert.visible ? "visible" : "invisible"
+    } w-screen fixed bottom-5 flex justify-center`}
+  >
+    <div class={`w-[90vw] alert ${alert.type} shadow-lg`}>
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current flex-shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          /></svg
+        >
+        <span>{alert.message}</span>
+      </div>
+    </div>
+  </div>
+{/key}
