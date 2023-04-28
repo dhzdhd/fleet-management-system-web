@@ -1,37 +1,14 @@
 <script lang="ts">
   import { useNavigate } from "svelte-navigator";
   import { fade, fly } from "svelte/transition";
-
-  interface TableData {
-    name: string;
-    pkey: string[];
-  }
-
-  interface Response {
-    headers: { name: string }[];
-    values: string[][];
-  }
-
-  interface InsertPayload {
-    data: string[];
-  }
-
-  interface UpdatePayload extends InsertPayload {
-    pkey: string[];
-    pkeyData: string[];
-    headers: string[];
-  }
-
-  interface CostPayload {
-    vehicleData: string[][];
-    total: number;
-  }
-
-  interface Alert {
-    message: string;
-    visible: boolean;
-    type: "alert-success" | "alert-error";
-  }
+  import type {
+    Alert,
+    CostPayload,
+    InsertPayload,
+    UpdatePayload,
+    Response,
+    TableData,
+  } from "../interfaces";
 
   const URL = "http://localhost:3000/api/";
   const nav = useNavigate();
