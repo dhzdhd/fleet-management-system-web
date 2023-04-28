@@ -105,6 +105,23 @@ app
     } finally {
       await conn.close();
     }
+  })
+  .delete(async (req, res) => {
+    let conn = await pool.getConnection();
+
+    let table = req.params.id;
+    let payload = req.body;
+    let condition;
+
+    if (payload.pkey.length === 2) {
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = ${payload.pkeyData[1]}`;
+    } else {
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
+    }
+
+    await conn.execute(`DELETE FROM ${table} WHERE ${condition}`);
+
+    await conn.close();
   });
 
 app.get("/api/cost", async (req, res) => {
