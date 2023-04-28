@@ -53,7 +53,7 @@ app
     let conn = await pool.getConnection();
 
     let data = await conn.execute(`SELECT * FROM ${req.params.id}`);
-    res.send(data);
+    res.status(200).send(data);
 
     await conn.close();
   })
@@ -68,11 +68,11 @@ app
           .join(",")})`,
         values
       );
-      res.send("Success");
+      res.status(200).send("Success");
 
       await conn.commit();
     } catch (e) {
-      res.send("Invalid data entered");
+      res.status(404).send("Invalid data entered");
     } finally {
       await conn.close();
     }
@@ -97,11 +97,11 @@ app
         `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`,
         payload.data
       );
-      res.send("Success");
+      res.status(200).send("Success");
 
       await conn.commit();
     } catch (e) {
-      res.send("Invalid data entered");
+      res.status(404).send("Invalid data entered");
     } finally {
       await conn.close();
     }
@@ -131,7 +131,6 @@ app.get("/api/cost", async (req, res) => {
     let data = await conn.execute(
       "SELECT vehicleid, SUM(totalcost) FROM cost NATURAL JOIN trip NATURAL JOIN vehicle_involved GROUP BY vehicleid"
     );
-    console.log(JSON.stringify(data));
     const rows: any = data.rows;
 
     const total: number = rows
@@ -139,13 +138,12 @@ app.get("/api/cost", async (req, res) => {
       .reduce((prev: number, cur: number) => prev + cur);
 
     const payload: CostPayload = { vehicleData: rows, total: total };
-    console.log(payload);
 
-    res.send(JSON.stringify(payload));
+    res.status(200).send(JSON.stringify(payload));
   } catch (e) {
-    console.log(e);
+    console.error(e);
 
-    res.send({ message: "Cannot calculate cost" });
+    res.status(404).send({ message: "Cannot calculate cost" });
   } finally {
     await conn.close();
   }
