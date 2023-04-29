@@ -98,18 +98,14 @@ app
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
     }
 
-    console.log(
-      `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`
-    );
-
     try {
       await conn.execute(
         `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`,
         payload.data
       );
-      res.status(200).send("Success");
-
       await conn.commit();
+
+      res.status(200).send("Success");
     } catch (e) {
       res.status(404).send("Invalid data entered");
     } finally {
@@ -121,18 +117,24 @@ app
 
     let table = req.params.id;
     let payload = req.body;
-    let condition;
 
+    let condition;
     if (payload.pkey.length === 2) {
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = '${payload.pkeyData[1]}'`;
     } else {
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
     }
 
-    await conn.execute(`DELETE FROM ${table} WHERE ${condition}`);
-    await conn.commit();
+    try {
+      await conn.execute(`DELETE FROM ${table} WHERE ${condition}`);
+      await conn.commit();
 
-    await conn.close();
+      res.status(200).send("Success");
+    } catch (e) {
+      res.status(404).send("Invalid data entered");
+    } finally {
+      await conn.close();
+    }
   });
 
 app.get("/api/cost", async (req, res) => {

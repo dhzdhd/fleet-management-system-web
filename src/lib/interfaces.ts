@@ -18,6 +18,11 @@ export interface UpdatePayload extends InsertPayload {
   headers: string[];
 }
 
+export interface DeletePayload {
+  pkey: string[];
+  pkeyData: string[];
+}
+
 export interface CostPayload {
   vehicleData: string[][];
   total: number;

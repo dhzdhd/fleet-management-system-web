@@ -8,6 +8,7 @@
     UpdatePayload,
     Response,
     TableData,
+    DeletePayload,
   } from "../interfaces";
 
   const URL = "http://localhost:3000/api/";
@@ -103,8 +104,6 @@
       return;
     }
 
-    console.log(optionResponse);
-
     const payload: UpdatePayload = {
       data: dialogArr,
       pkey: option.pkey,
@@ -143,6 +142,40 @@
     }
 
     nav(-1);
+  };
+
+  const deleteData = async (index: number) => {
+    const payload: DeletePayload = {
+      pkey: option.pkey,
+      pkeyData: optionResponse.values[index].filter(
+        (_, i) => i === option.pkey.length - 1 || i === option.pkey.length - 2
+      ),
+    };
+
+    const response = await fetch(`${URL}tables/${option.name}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.text();
+
+    if (response.status === 200) {
+      promise = fetchData(option.name);
+      console.log(data);
+
+      alert = {
+        message: "Successfully updated data",
+        visible: true,
+        type: "alert-success",
+      };
+    } else {
+      alert = {
+        message: "Failed to update data",
+        visible: true,
+        type: "alert-error",
+      };
+    }
   };
 
   const fetchCost = async () => {
@@ -237,10 +270,8 @@
                 >
               </td>
               <td>
-                <a
-                  on:click={() => showUpdateDataModal(i)}
-                  href="#upsert-modal"
-                  class="btn">Delete</a
+                <button on:click={() => deleteData(i)} class="btn"
+                  >Delete</button
                 >
               </td>
               {#each item as item}
