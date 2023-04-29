@@ -3,8 +3,9 @@ import odb from "oracledb";
 import type { Pool } from "oracledb";
 import cors from "cors";
 import { promises as fs } from "fs";
-import bodyParser from "body-parser";
+// import * as dotenv from "dotenv";
 
+// dotenv.config();
 const app = express();
 const port = 3000;
 
@@ -19,11 +20,16 @@ interface CostPayload {
 }
 
 async function initDb() {
+  const user = process.env.USER_NAME ?? "system";
+  const password = process.env.PASSWORD ?? "lolxd5";
+  const host = process.env.HOST ?? "localhost";
+  const serviceName = process.env.SERVICE_NAME ?? "deep";
+
   try {
     pool = await odb.createPool({
-      user: "system",
-      password: "lolxd5",
-      connectionString: "localhost/deep",
+      user: user,
+      password: password,
+      connectionString: `${host}/${serviceName}`,
     });
 
     let conn = await pool.getConnection();

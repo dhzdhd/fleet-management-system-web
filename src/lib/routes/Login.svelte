@@ -9,7 +9,10 @@
   let password: string;
 
   const submit = () => {
-    if (password === "a" && username === "a") {
+    if (
+      password === import.meta.env.VITE_PASSWORD &&
+      username === import.meta.env.VITE_USERNAME
+    ) {
       nav("home");
     } else {
       alert = {
