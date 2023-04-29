@@ -154,8 +154,6 @@ app.get("/api/cost", async (req, res) => {
 
     res.status(200).send(JSON.stringify(payload));
   } catch (e) {
-    console.error(e);
-
     res.status(404).send({ message: "Cannot calculate cost" });
   } finally {
     await conn.close();

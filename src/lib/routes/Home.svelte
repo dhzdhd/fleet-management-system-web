@@ -66,7 +66,6 @@
     dialogArr = [];
 
     const data = await response.text();
-    console.log(data);
 
     if (response.status === 200) {
       promise = fetchData(option.name);
@@ -113,8 +112,6 @@
       headers: optionResponse.headers.map((e) => e.name),
     };
 
-    console.log(JSON.stringify(payload));
-
     const response = await fetch(`${URL}tables/${option.name}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -126,7 +123,6 @@
 
     if (response.status === 200) {
       promise = fetchData(option.name);
-      console.log(data);
 
       alert = {
         message: "Successfully updated data",
@@ -162,7 +158,6 @@
 
     if (response.status === 200) {
       promise = fetchData(option.name);
-      console.log(data);
 
       alert = {
         message: "Successfully updated data",
@@ -188,8 +183,6 @@
         vehicleData: data.vehicleData,
         total: data.total,
       };
-
-      console.log(data);
     } else {
       nav(-1);
       alert = {

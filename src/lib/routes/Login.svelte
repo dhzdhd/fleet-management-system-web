@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useFocus, useNavigate } from "svelte-navigator";
+  import { useNavigate } from "svelte-navigator";
   import { fade, fly } from "svelte/transition";
   import type { Alert } from "../interfaces";
 
@@ -35,7 +35,7 @@
   class="flex flex-col items-center justify-center h-screen gap-5"
   action=""
 >
-  <h1 class="text-4xl pb-8">Fleet Management System</h1>
+  <h1 class="pb-8 text-4xl">Fleet Management System</h1>
   <input
     bind:value={username}
     class="w-full max-w-xs input input-bordered"
@@ -65,7 +65,7 @@
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="stroke-current flex-shrink-0 h-6 w-6"
+          class="flex-shrink-0 w-6 h-6 stroke-current"
           fill="none"
           viewBox="0 0 24 24"
           ><path
