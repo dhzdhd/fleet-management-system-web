@@ -191,6 +191,7 @@
 
       console.log(data);
     } else {
+      nav(-1);
       alert = {
         message: "Failed to fetch cost",
         visible: true,
