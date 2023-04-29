@@ -98,8 +98,12 @@ app
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
     }
 
+    console.log(
+      `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`
+    );
+
     try {
-      let data = await conn.execute(
+      await conn.execute(
         `UPDATE ${req.params.id} SET ${params.join(",")} WHERE ${condition}`,
         payload.data
       );
@@ -126,6 +130,7 @@ app
     }
 
     await conn.execute(`DELETE FROM ${table} WHERE ${condition}`);
+    await conn.commit();
 
     await conn.close();
   });

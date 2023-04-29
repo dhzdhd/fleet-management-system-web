@@ -87,16 +87,23 @@
   };
 
   const showUpdateDataModal = async (index: number) => {
-    dialogArr = optionResponse.values[index];
+    dialogArr = [...optionResponse.values[index]];
     dialogType = "update";
     currentUpdateIndex = index;
   };
 
   const updateData = async () => {
     if (dialogArr.length !== optionResponse.headers.length) {
+      alert = {
+        message: "All fields must be filled",
+        visible: true,
+        type: "alert-error",
+      };
       nav(-1);
       return;
     }
+
+    console.log(optionResponse);
 
     const payload: UpdatePayload = {
       data: dialogArr,
@@ -313,7 +320,7 @@
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="stroke-current flex-shrink-0 h-6 w-6"
+          class="flex-shrink-0 w-6 h-6 stroke-current"
           fill="none"
           viewBox="0 0 24 24"
           ><path
