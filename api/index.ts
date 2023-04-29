@@ -93,7 +93,7 @@ app
 
     let condition;
     if (payload.pkey.length === 2) {
-      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = ${payload.pkeyData[1]}`;
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = '${payload.pkeyData[1]}'`;
     } else {
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
     }
@@ -120,7 +120,7 @@ app
     let condition;
 
     if (payload.pkey.length === 2) {
-      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = ${payload.pkeyData[1]}`;
+      condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}' AND ${payload.pkey[1]} = '${payload.pkeyData[1]}'`;
     } else {
       condition = `${payload.pkey[0]} = '${payload.pkeyData[0]}'`;
     }
