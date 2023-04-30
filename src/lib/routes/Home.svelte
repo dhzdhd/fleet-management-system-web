@@ -14,13 +14,12 @@
   const URL = "http://localhost:3000/api/";
   const nav = useNavigate();
   const tables: TableData[] = [
-    { name: "driver", pkey: ["DRIVERID"] },
-    { name: "vehicle", pkey: ["VEHICLEID"] },
-    { name: "trip", pkey: ["TRIPID"] },
-    { name: "cost", pkey: ["COSTID"] },
-    { name: "vehicle_involved", pkey: ["TRIPID", "VEHICLEID"] },
-    { name: "driver_involved", pkey: ["TRIPID", "DRIVERID"] },
-    { name: "driver_phone", pkey: ["PHONE", "DRIVERID"] },
+    { name: "department", pkey: ["D_ID"] },
+    { name: "student", pkey: ["S_ID"] },
+    { name: "instructor", pkey: ["I_ID"] },
+    { name: "course", pkey: ["C_ID"] },
+    { name: "takes", pkey: ["S_ID", "C_ID"] },
+    { name: "assignment", pkey: ["A_ID"] },
   ];
 
   const parse = (data: any): Response => {
@@ -173,26 +172,6 @@
     }
   };
 
-  const fetchCost = async () => {
-    const response = await fetch(`${URL}cost`);
-
-    if (response.status === 200) {
-      const data = await response.json();
-
-      costData = {
-        vehicleData: data.vehicleData,
-        total: data.total,
-      };
-    } else {
-      nav(-1);
-      alert = {
-        message: "Failed to fetch cost",
-        visible: true,
-        type: "alert-error",
-      };
-    }
-  };
-
   let option: TableData = tables[0];
   let optionResponse: Response = { headers: [], values: [] };
   let dialogArr: string[] = [];
@@ -226,9 +205,6 @@
     </div>
     <div class="flex-none">
       <ul class="gap-3 px-1 menu menu-horizontal">
-        <a on:click={() => fetchCost()} href="#cost-modal" class="btn"
-          >Calculate cost</a
-        >
         <a
           on:click={() => showInsertDataModal()}
           href="#upsert-modal"
@@ -302,32 +278,6 @@
           dialogType === "insert" ? await insertData() : await updateData()}
         class="btn">Submit</button
       >
-      <a href="#" class="btn">Close</a>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="cost-modal">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold">Total cost - {costData.total}</h3>
-    <table class="table w-full my-5">
-      <thead>
-        <tr>
-          <th>Vehicle ID</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each costData.vehicleData as item, i}
-          <tr class="hover">
-            {#each item as item}
-              <td>{item}</td>
-            {/each}
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-    <div class="modal-action">
       <a href="#" class="btn">Close</a>
     </div>
   </div>

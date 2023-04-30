@@ -1,63 +1,58 @@
 CREATE TABLE
-    driver(
-        driverid VARCHAR2(10) CONSTRAINT DRIVERID_FORMAT CHECK (driverid LIKE 'DR%') CONSTRAINT DRIVERID_PK PRIMARY KEY,
-        licensenumber NUMBER CONSTRAINT UNIQUE_LN UNIQUE,
-        licenseexpiry DATE,
-        first_name VARCHAR2(20),
-        last_name VARCHAR(20),
-        street VARCHAR(20),
-        city VARCHAR(20)
+    department (
+        d_id NUMBER(10) PRIMARY KEY,
+        d_name VARCHAR2(255)
     );
 
 CREATE TABLE
-    vehicle(
-        vehicleid VARCHAR(10) CONSTRAINT VEHICLEID_PK PRIMARY KEY CONSTRAINT VEHICLEID_FORMAT CHECK (vehicleid LIKE 'VH%'),
-        model VARCHAR(10),
-        mileage NUMBER(10),
-        regyear VARCHAR(4) CONSTRAINT YEAR_FORMAT CHECK (
-            regyear LIKE '19__'
-            OR regyear LIKE '2___'
-        )
+    student (
+        s_id NUMBER(10) PRIMARY KEY,
+        s_name VARCHAR2(255),
+        semail VARCHAR2(255),
+        dob DATE,
+        tot_cred NUMBER(10),
+        d_id NUMBER(10),
+        FOREIGN KEY (d_id) REFERENCES department(d_id)
     );
 
 CREATE TABLE
-    trip(
-        tripid VARCHAR2(10) CONSTRAINT TRIPID_PK PRIMARY KEY CONSTRAINT TRIPID_FORMAT CHECK (tripid LIKE 'TR%'),
-        startdate DATE,
-        enddate DATE,
-        startlocation VARCHAR2(20),
-        destination VARCHAR(20),
-        distance NUMBER(20),
-        passengercount NUMBER(10),
-        CONSTRAINT END_GREATER_START CHECK (enddate >= startdate)
+    instructor (
+        i_id NUMBER(10) PRIMARY KEY,
+        i_name VARCHAR2(255),
+        iemail VARCHAR2(255),
+        d_id NUMBER(10),
+        FOREIGN KEY (d_id) REFERENCES department(d_id)
     );
 
 CREATE TABLE
-    cost(
-        costid VARCHAR2(10) CONSTRAINT COSTID_PK PRIMARY KEY CONSTRAINT COSTID_FORMAT CHECK (costid LIKE 'CS%'),
-        tripid VARCHAR2(10) CONSTRAINT TRIPID_FK REFERENCES trip,
-        fuelcost NUMBER(20) CONSTRAINT GREATERTHAN0 CHECK (fuelcost > 0),
-        totalcost NUMBER(20),
-        CONSTRAINT TC_GREATER_FC CHECK (totalcost > fuelcost)
+    course (
+        c_id NUMBER(10) PRIMARY KEY,
+        c_name VARCHAR2(255),
+        credits NUMBER(10),
+        d_id NUMBER(10),
+        i_id NUMBER(10),
+        FOREIGN KEY (d_id) REFERENCES department(d_id),
+        FOREIGN KEY (i_id) REFERENCES instructor(i_id)
     );
 
 CREATE TABLE
-    vehicle_involved(
-        tripid VARCHAR2(10) CONSTRAINT TRIPID_FOR_VI_FK REFERENCES trip,
-        vehicleid VARCHAR2(10) CONSTRAINT VEHICLEID_FK REFERENCES vehicle,
-        CONSTRAINT VI_PK PRIMARY KEY (tripid, vehicleid)
+    takes (
+        s_id NUMBER(10),
+        c_id NUMBER(10),
+        attendance NUMBER(10),
+        PRIMARY KEY (s_id, c_id),
+        FOREIGN KEY (s_id) REFERENCES student(s_id),
+        FOREIGN KEY (c_id) REFERENCES course(c_id)
     );
 
 CREATE TABLE
-    driver_involved(
-        tripid VARCHAR2(10) CONSTRAINT TRIPID_FOR_DI_FK REFERENCES trip,
-        driverid VARCHAR2(10) CONSTRAINT DRIVERID_FK REFERENCES driver,
-        CONSTRAINT DI_PK PRIMARY KEY (tripid, driverid)
-    );
-
-CREATE TABLE
-    driver_phone(
-        driverid VARCHAR2(10) CONSTRAINT DRIVERID_FOR_DP_FK REFERENCES driver,
-        phone VARCHAR2(10) CONSTRAINT TEN_DIGIT CHECK (phone LIKE '__________'),
-        CONSTRAINT DP_PK PRIMARY KEY (phone, driverid)
+    assignment (
+        a_id NUMBER(10) PRIMARY KEY,
+        a_name VARCHAR2(255),
+        marks NUMBER(10),
+        c_id NUMBER(10),
+        s_id NUMBER(10),
+        max_m NUMBER(10),
+        FOREIGN KEY (c_id) REFERENCES course(c_id),
+        FOREIGN KEY (s_id) REFERENCES student(s_id)
     );

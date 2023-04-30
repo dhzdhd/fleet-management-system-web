@@ -10,8 +10,8 @@
 
   const submit = () => {
     if (
-      password === import.meta.env.VITE_PASSWORD &&
-      username === import.meta.env.VITE_USERNAME
+      (password === import.meta.env.VITE_PASSWORD ?? "a") &&
+      (username === import.meta.env.VITE_USERNAME ?? "a")
     ) {
       nav("home");
     } else {
