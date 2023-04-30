@@ -45,12 +45,16 @@
 
   const insertData = async () => {
     if (dialogArr.length !== optionResponse.headers.length) {
+      console.log(dialogArr.length);
+      console.log(optionResponse.headers.length);
+
       alert = {
         message: "All fields must be filled",
         visible: true,
         type: "alert-error",
       };
       nav(-1);
+      dialogArr = [];
       return;
     }
 
@@ -100,6 +104,7 @@
         type: "alert-error",
       };
       nav(-1);
+      dialogArr = [];
       return;
     }
 
@@ -285,7 +290,10 @@
 
 <div class="modal" id="upsert-modal">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Insert into {option.name.toUpperCase()}</h3>
+    <h3 class="text-lg font-bold">
+      {dialogType === "insert" ? "Insert into" : "Update"}
+      {option.name.toUpperCase()}
+    </h3>
     <ul class="flex flex-col gap-2 my-5">
       {#each optionResponse.headers as item, i}
         <input
