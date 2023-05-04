@@ -26,7 +26,14 @@
   const parse = (data: any): Response => {
     return {
       headers: data.metaData,
-      values: data.rows,
+      values: data.rows.map((arr: any[]) =>
+        arr.map((e: string | number) => {
+          if (typeof e === "string" && e.match(/00.000Z/) !== null) {
+            return e.substring(0, 10);
+          }
+          return e;
+        })
+      ),
     } satisfies Response;
   };
 
