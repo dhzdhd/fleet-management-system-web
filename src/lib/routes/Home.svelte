@@ -172,13 +172,13 @@
       promise = fetchData(option.name);
 
       alert = {
-        message: "Successfully updated data",
+        message: "Successfully deleted data",
         visible: true,
         type: "alert-success",
       };
     } else {
       alert = {
-        message: "Failed to update data",
+        message: "Failed to delete data",
         visible: true,
         type: "alert-error",
       };
