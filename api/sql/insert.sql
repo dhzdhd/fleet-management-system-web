@@ -84,7 +84,7 @@ INSERT INTO trip
 VALUES (
         'TR2',
         '24-AUG-2022',
-        '25-JUN-2022',
+        '25-AUG-2022',
         'Bengaluru',
         'Mangaluru',
         500,

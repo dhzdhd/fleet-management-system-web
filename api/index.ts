@@ -34,16 +34,31 @@ async function initDb() {
 
     let conn = await pool.getConnection();
 
-    const data = await fs.readFile("sql/create_table.sql", {
+    let data = await fs.readFile("sql/create_table.sql", {
       encoding: "utf8",
     });
-    const commands = data.split(";");
+    let commands = data.split(";");
 
     for (let i = 0; i < commands.length - 1; i++) {
       try {
         await conn.execute(`${commands[i]}`);
       } catch (e) {
         console.log("Table already created");
+      }
+    }
+
+    data = await fs.readFile("sql/insert.sql", {
+      encoding: "utf8",
+    });
+    commands = data.split(";");
+
+    for (let i = 0; i < commands.length - 1; i++) {
+      try {
+        await conn.execute(`${commands[i]}`);
+        await conn.commit();
+      } catch (e) {
+        console.log(e);
+        console.log("Query already executed");
       }
     }
 
